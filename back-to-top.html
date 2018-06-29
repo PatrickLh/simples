@@ -23,7 +23,7 @@
             // requestAnimationFrame大致为60FPS-40FPS(每秒60-40次)，所以接收一个参数，多少秒完成
             // 匀速计算步进，总高度去除总动画数
             let step = window.scrollY / (second * 40);
-            if (offset) {
+            if (offset > 0) {
                 step = offset;
             }
             function animation () {
