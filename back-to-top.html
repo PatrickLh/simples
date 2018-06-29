@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Back To Top</title>
+    <style>
+        body {
+            height: 9999px;
+            background: linear-gradient(#fff, #b0fafa);
+        }
+        .button_to_top {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            height: 50px;
+        }
+    </style>
+    <script>
+        // 默认使用0.5s运行完所有动画，也可以指定渲染次数
+        function toTop(second = 0.5, offset) {
+            // requestAnimationFrame大致为60FPS-40FPS(每秒60-40次)，所以接收一个参数，多少秒完成
+            // 匀速计算步进，总高度去除总动画数
+            let step = window.scrollY / (second * 40);
+            if (offset) {
+                step = offset;
+            }
+            function animation () {
+                window.scrollTo(0, Math.max(window.scrollY - step, 0));
+                if (window.scrollY > 0) {
+                    window.requestAnimationFrame(animation);
+                }
+            }
+            window.requestAnimationFrame(animation);
+        }
+    </script>
+</head>
+<body>
+    <button class="button_to_top" onclick="toTop()">Back to Top</button>
+</body>
+</html>
