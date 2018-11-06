@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache">
+    <title>Drag block</title>
+    <style>
+        .droparea {
+            background: #ededed;
+            padding: 10px;
+        }
+        .drag {
+            height: 30px;
+            background-color: #d8f1ff;
+            margin: 10px;
+            padding: 10px;
+        }
+        .drag.moving {
+            background: #fce7fa;
+        }
+        .drag.moveUp {
+            transform: translateY(-100%);
+            transition: transform 0.2s;
+        }
+        .drag.moveDown {
+            transform: translateY(100%);
+            transition: transform 0.2s;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="droparea">
+        <section>
+            <label for="">Group One</label>
+            <div data-group="1" class="drag" draggable="true">block one</div>
+            <div data-group="1" class="drag" draggable="true">block two</div>
+        </section>
+        <section>
+            <label for="">Group Two</label>
+            <div data-group="2" class="drag" draggable="true">block three</div>
+            <div data-group="2" class="drag" draggable="true">block four</div>
+        </section>
+    </div>
+    <script>
+        /**
+         * 由于存在需要分组的情况，不同分组间不能进行拖动，通过设置data-group来区分分组
+         */
+        (function(dropSelector, dragSelector){
+            // 当前拖动对象的id
+            let ele
+            // 遍历所有可拖动对象
+            Array.prototype.forEach.call(document.querySelectorAll(dragSelector), nodeItem => {
+                nodeItem.addEventListener('dragstart', ev => {
+                    ele = ev.target;
+                    ev.dataTransfer.setData("text/plain", ev.target.id);
+                    // 添加拖动时候的样式
+                    ev.target.classList.add('moving');
+                })
+                nodeItem.addEventListener('dragenter', ev => {
+                    // 当拖动进入节点不是当前节点的时候触发交换
+                    if(ev.target !== ele && ele.dataset.group === ev.target.dataset.group) {
+                        // 交换两个节点位置，并给当前元素增加位移
+                        if (ev.clientY > ele.getBoundingClientRect().top) {
+                            ev.target.classList.add('moveUp');
+                            setTimeout(() => {
+                                ev.target.classList.remove('moveUp');
+                                ele.parentNode.insertBefore(ev.target, ele);
+                            }, 200);
+
+                        } else {
+                            ev.target.classList.add('moveDown');
+                            setTimeout(() => {
+                                ev.target.classList.remove('moveDown');
+                                ele.parentNode.insertBefore(ele, ev.target);
+                            }, 200);
+                        }
+                    } 
+                })
+            })
+            // 监听拖动区域的drop事件
+            document.querySelector(dropSelector).addEventListener('drop', ev => {
+                ev.preventDefault();
+                ele.classList.remove('moving');
+            })
+            // 设置拖动区域可拖动
+            document.querySelector(dropSelector).addEventListener('dragover', ev => {
+                ev.preventDefault();
+            })
+        })('.droparea', '.drag')
+    </script>
+</body>
+
+</html>
